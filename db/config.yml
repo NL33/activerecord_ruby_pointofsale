@@ -1,0 +1,7 @@
+development:
+  adapter: postgresql
+  database: active_record_pointofsale
+
+test:
+  adapter: postgresql
+  database: active_record_pointofsale

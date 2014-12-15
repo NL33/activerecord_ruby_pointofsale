@@ -1,0 +1,44 @@
+Setup: 
+	Desktop: $ gem install bundler
+	$ mkdir active_record_pointofsale
+	$ cd active_record_pointofsale
+	$ mkdir lib spec db
+	$ touch Rakefile
+	$ touch Gemfile
+	$ touch commandline_commands_pointofsale
+	$ touch pointofsale.rb
+	$ touch db/config.yml
+	
+
+Gemfile:
+	source 'https://rubygems.org'  
+
+	gem 'activerecord' 
+	gem 'pg' 
+	gem 'rake' 
+	gem 'rspec' 
+	gem 'active_record_migrations'
+  $ bundle install
+
+Rakefile:
+	require 'active_record_migrations'
+	ActiveRecordMigrations.load_tasks
+
+Config.yml: 
+	development:
+	adapter: postgresql
+	database: active_record_employee_tracker
+
+	test:
+	adapter: postgresql
+	database: active_record_employee_tracker
+
+Create database:
+	Open up Postgres 
+	$ rake db:create 
+
+Migrations:
+	$ rake db:new_migration name=create_products
+	$ rake db:new_migration name=create_customers
+    $ rake db:new_migration name=create_cashiers
+    $ rake db:new_migration name=create_purchases
