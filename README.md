@@ -1,1 +1,1 @@
-Practice program for Ruby and active record for a "point of sale" system (a system for a store manager to track purchases and customer/cashier activity).
+Practice program written in Ruby with active record for a "point of sale" system (a system for a store manager to track purchases and customer/cashier activity).

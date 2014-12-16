@@ -20,6 +20,7 @@ def menu
   puts "Welcome!\n 
   Press 'a' to enter a new product to the POS; 
   press 'b' to enter a cashier and create a login for him/her;
+  press 'c' if you are a cashier, to enter customer products and totals, and show a receipt
   press 'x' to exit."
  
   choice = gets.chomp
@@ -27,7 +28,9 @@ def menu
   when 'a'
 	add_product
   when 'b'
-  	add_cashier
+  add_cashier
+  when 'c'
+  add_purchases
 
   when 'x'
    puts "Good-bye!"
@@ -67,6 +70,50 @@ def add_cashier
   break if gets.chomp == 'n'
   end
   menu
+end
+
+def add_purchases
+  puts "Please enter your name"
+    name_entry = gets.chomp
+  puts "Please enter your login"
+   login_entry = gets.chomp
+  if !Cashier.where(:name => name_entry, :login => login_entry).exists?
+    puts "Sorry, your name/login information did not match our records, please try again."
+    add_purchases
+  else
+    cashier = Cashier.where(:name => name_entry, :login => login_entry).first
+    puts "Welcome #{cashier.name}.\n"
+    puts "Please enter your customer's name"
+    customer_name = gets.chomp
+    customer = Customer.new({:name => customer_name,:cashier_id => cashier.id})
+    customer.save
+    puts "Please enter the date"
+    date = gets.chomp
+    totals_array = []
+    loop do
+      puts "Enter the new product name or press 'c' to complete checkout"
+      break if gets.chomp == 'c'
+      product_name = gets.chomp
+      puts "enter the price"
+      price = gets.chomp
+      puts "enter the quantity"
+      quantity = gets.chomp
+      total = price.to_f * quantity.to_f
+      product = Product.new({:name => product_name,:price => price, :number => quantity, :total => total})
+      product.save
+      purchase = Purchase.new({:customer_id => customer.id, :product_id => product.id, :date => date})
+      purchase.save
+      totals_array << product.total
+    end
+      puts "The total for today's transaction is $#{(totals_array.sum) * 100 / 100 }\n\n" #to show not more than 2 decimal spots
+      puts "Here is the receipt:"
+      show_receipt
+      menu
+ end     
+end
+
+def show_receipt
+  ****
 end
 
 welcome

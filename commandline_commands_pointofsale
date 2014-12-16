@@ -39,6 +39,10 @@ Create database:
 
 Migrations:
 	$ rake db:new_migration name=create_products
+	       note: subsequently added a total column: $ rake "db:new_migration[AddTotalToProducts, total:float]"
 	$ rake db:new_migration name=create_customers
     $ rake db:new_migration name=create_cashiers
+         note: name and login columns not properly read at first, so added these with another migration:
+         	$ rake "db:new_migration[AddNameToCashiers, name:string]"
+			$ rake "db:new_migration[AddLoginToCashiers, login:string]"
     $ rake db:new_migration name=create_purchases
