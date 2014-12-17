@@ -20,7 +20,8 @@ def menu
   puts "Welcome!\n 
   Press 'a' to enter a new product to the POS; 
   press 'b' to enter a cashier and create a login for him/her;
-  press 'c' if you are a cashier, to enter customer products and totals, and show a receipt
+  press 'c' if you are a cashier, to enter customer products and totals, and show a receipt;
+  press 'd' if you are a store manager, to see total sales a cashier has processed;
   press 'x' to exit."
  
   choice = gets.chomp
@@ -31,7 +32,8 @@ def menu
   add_cashier
   when 'c'
   add_purchases
-
+  when 'd'
+   search_by_cashier
   when 'x'
    puts "Good-bye!"
    exit
@@ -87,33 +89,53 @@ def add_purchases
     customer_name = gets.chomp
     customer = Customer.new({:name => customer_name,:cashier_id => cashier.id})
     customer.save
-    puts "Please enter the date"
+    puts "Please enter the date and time ('YYYY-MM-DD HH:MM:SS')"
     date = gets.chomp
     totals_array = []
+    product_summaries = []
     loop do
-      puts "Enter the new product name or press 'c' to complete checkout"
+      puts "Press return to enter a product or press 'c' to complete checkout and show a receipt"
       break if gets.chomp == 'c'
-      product_name = gets.chomp
+      puts "Please enter the purchased item name"
+       product_name = gets.chomp
       puts "enter the price"
-      price = gets.chomp
+       price = gets.chomp
       puts "enter the quantity"
-      quantity = gets.chomp
-      total = price.to_f * quantity.to_f
-      product = Product.new({:name => product_name,:price => price, :number => quantity, :total => total})
-      product.save
-      purchase = Purchase.new({:customer_id => customer.id, :product_id => product.id, :date => date})
-      purchase.save
+       quantity = gets.chomp
+      total = price.to_f * quantity.to_f * 100 / 100
+      product = Product.new({:name => product_name, :price => price, :number => quantity, :total => total})
+       product.save
+      purchase = Purchase.new({:customer_id => customer.id, :product_id => product.id, :date => date, :cashier_id => cashier.id})
+       purchase.save
       totals_array << product.total
+      product_summaries << "Item: #{product.name}, Price: $#{product.price}, Quantity: #{product.number}, Total: $#{product.total}"
     end
-      puts "The total for today's transaction is $#{(totals_array.sum) * 100 / 100 }\n\n" #to show not more than 2 decimal spots
+      grand_total =  totals_array.sum * 100 / 100 #math to show not more than 2 decimal spots
       puts "Here is the receipt:"
-      show_receipt
+      puts "Name: #{customer_name}\n"
+      puts "Date: #{date}\n"
+      product_summaries.each {|summary| puts "#{summary}\n"}
+      puts "Grand Total: $#{grand_total}\n\n"
       menu
- end     
+   end     
 end
 
-def show_receipt
-  ****
+def search_by_cashier
+  puts "Hi There, Store Manager. \n"
+  puts "To view the (i) total number of sales and (ii) the total amount a cashier has processed, enter the name of the cashier"
+  cashier_name = gets.chomp
+  cashier = Cashier.where(:name => cashier_name).first
+  puts "#{cashier_name}'s activity has been as follows:\n\n"
+  puts "Total Number of this Cashier's Transactions: #{Purchase.where(cashier_id: cashier.id).count}\n"
+  total_sum = 0
+  cashier.purchases.each {|purchase| total_sum += purchase.product.total}
+  puts "Total Value of all this Cashier's Transactions: $#{total_sum}\n\n"
+  puts "Press 'a' to search again, or 'b' to return to the main menu"
+      if gets.chomp == 'a'
+        search_by_cashier
+      elsif gets.chomp == 'b'
+         menu
+      end
 end
 
 welcome

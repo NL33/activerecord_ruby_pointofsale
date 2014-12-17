@@ -46,3 +46,5 @@ Migrations:
          	$ rake "db:new_migration[AddNameToCashiers, name:string]"
 			$ rake "db:new_migration[AddLoginToCashiers, login:string]"
     $ rake db:new_migration name=create_purchases
+    	note: later added cashier id to purchases:
+    		$ rake "db:new_migration[AddCashierIdToPurchases, cashier_id:integer]"
